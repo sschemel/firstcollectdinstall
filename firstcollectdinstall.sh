@@ -11,7 +11,6 @@ ee=="Ubuntu 15.04"
 ff=="Ubuntu 14.04.1 LTS"
 gg=="Ubuntu 12.04" #maps to hostOS_3
 
-
 #addtional variables used
 selection=0
 
@@ -29,8 +28,6 @@ centos_5_rpm=="SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
 aws_linux_2014_09_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
 aws_linux_2015_03_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
-
-
 #determine hostOS
 hostOS==$(sudo cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
 hostOS_2==$(sudo cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
@@ -38,6 +35,19 @@ hostOS_3==$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' 
 
 #configure collectd variables
 basic_collectd=="https://dl.signalfx.com/collectd-simple | sudo bash -s --"
+#aggregatedhost_collectd==""
+
+confirm ()
+{
+	read -r -p "is this correct? [y/N] " response
+		if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
+			then
+    			continue
+		else
+    			exit 0
+		fi 
+}
+
 
 #Variable Checks
 #echo "hostOS is $hostOS<"
@@ -49,49 +59,49 @@ if [ "$aa" == "$hostOS" ] #CentOS/RHEL Linux 7 Check
 	then 
 		selection=1
 		echo "Install will proceed for Centos/RHEL Linux 7"
-		sleep 1
+		confirm ()
 			
 elif [[ ( "$bb" = "$hostOS" ) || ( "$bbb" = "$hostOS_2" ) ]] #CentOS/RHEL Linux 6 Check
 	then 
 		selection=2
 		echo "Install will proceed for Centos/RHEL Linux 6"
-		sleep 1
+		confirm ()
 		
 elif [ "$cc" == "$hostOS_2" ] #CentOS/RHEL Linux 5 Check #tested and works
 	then
 		selection=3
 		echo "Install will proceed for Centos/RHEL Linux 5"
-		sleep 1
+		confirm ()
 
 elif [ "$dd" == "$hostOS" ] #Amazon Linux 2014.09
 	then
 		selection=4
 		echo "Install will proceed for Amazon Linux 2014.09"
-		sleep 1
+		confirm ()
 
 elif [ "$ff" == "$hostOS" ]
 	then
 		selection=5
 		echo "Install will proceed for Amazon Linux 2014.10"
-		sleep 1
+		confirm ()
 
 elif [ "$ee" == "$hostOS" ]
 	then
 		selection=6
 		echo "Install will proceed for Ubuntu 15.04"
-		sleep 1
+		confirm ()
 
 elif [ "$ff" == "$hostOS" ]
 	then
 		selection=7
 		echo "Install will proceed for Ubuntu 14.04"
-		sleep 1
+		confirm ()
 
 elif [ "$gg" == "$hostOS_3" ]
 	then
 		selection=8
 		echo "Install will proceed for Ubuntu 12.04"
-		sleep 1
+		confirm ()
 
 else
 	#echo $selection #check for currently value of selection
@@ -156,7 +166,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+			curl -sSL $basic_collectd
 
 			
 	elif [ "$selection" -eq 3 ] #CentOS/RHEL Linux 5 Install
@@ -199,7 +209,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+			curl -sSL $basic_collectd
 
 	elif [ "$selection" -eq 5 ] #Amazon Linux 2015.03 Install 
 		then
@@ -216,7 +226,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+			curl -sSL $basic_collectd
 
 	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]] #Ubuntu 15.04 & 14.04 Install
 		then
@@ -239,7 +249,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo apt-get install collectd -y
 
 			echo "--->Starting Configuration of collectd...<---"	
-			curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+			curl -sSL $basic_collectd
 
 	elif [ "$selection" -eq 8 ] #Ubuntu 12.04 Install
 		then
@@ -262,7 +272,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo apt-get install collectd -y
 
 			echo "--->Starting Configuration of collectd...<---"	
-			curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+			curl -sSL $basic_collectd
 
 fi
 
