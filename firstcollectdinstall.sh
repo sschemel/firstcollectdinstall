@@ -59,49 +59,49 @@ if [ "$aa" == "$hostOS" ] #CentOS/RHEL Linux 7 Check
 	then 
 		selection=1
 		echo "Install will proceed for Centos/RHEL Linux 7"
-		confirm ()
+		confirm
 			
 elif [[ ( "$bb" = "$hostOS" ) || ( "$bbb" = "$hostOS_2" ) ]] #CentOS/RHEL Linux 6 Check
 	then 
 		selection=2
 		echo "Install will proceed for Centos/RHEL Linux 6"
-		confirm ()
+		confirm
 		
 elif [ "$cc" == "$hostOS_2" ] #CentOS/RHEL Linux 5 Check #tested and works
 	then
 		selection=3
 		echo "Install will proceed for Centos/RHEL Linux 5"
-		confirm ()
+		confirm
 
 elif [ "$dd" == "$hostOS" ] #Amazon Linux 2014.09
 	then
 		selection=4
 		echo "Install will proceed for Amazon Linux 2014.09"
-		confirm ()
+		confirm
 
 elif [ "$ff" == "$hostOS" ]
 	then
 		selection=5
 		echo "Install will proceed for Amazon Linux 2014.10"
-		confirm ()
+		confirm
 
 elif [ "$ee" == "$hostOS" ]
 	then
 		selection=6
 		echo "Install will proceed for Ubuntu 15.04"
-		confirm ()
+		confirm
 
 elif [ "$ff" == "$hostOS" ]
 	then
 		selection=7
 		echo "Install will proceed for Ubuntu 14.04"
-		confirm ()
+		confirm
 
 elif [ "$gg" == "$hostOS_3" ]
 	then
 		selection=8
 		echo "Install will proceed for Ubuntu 12.04"
-		confirm ()
+		confirm
 
 else
 	#echo $selection #check for currently value of selection
