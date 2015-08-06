@@ -34,7 +34,7 @@ hostOS_2==$(sudo cat /etc/redhat-release | head -c 16) #older versions of RPM ba
 hostOS_3==$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
 
 #configure collectd variables
-basic_collectd=$("https://dl.signalfx.com/collectd-simple | sudo bash -s --")
+basic_collectd=$(curl -sSL "https://dl.signalfx.com/collectd-simple | sudo bash -s --")
 #aggregatedhost_collectd==""
 
 confirm ()
@@ -147,7 +147,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL $basic_collectd
+			$basic_collectd
 
 			
 
