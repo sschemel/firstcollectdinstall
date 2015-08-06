@@ -23,11 +23,11 @@ aws_linux_2014_09=="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-
 aws_linux_2015_03=="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
 #rpm file variables
-#centos_7_rpm=="SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
-#centos_6_rpm=="SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
-#centos_5_rpm=="SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
-#aws_linux_2014_09_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
-#aws_linux_2015_03_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
+centos_7_rpm=="SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
+centos_6_rpm=="SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
+centos_5_rpm=="SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
+aws_linux_2014_09_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
+aws_linux_2015_03_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
 
 
@@ -75,19 +75,19 @@ elif [ "$ff" == "$hostOS" ]
 		echo "Install will proceed for Amazon Linux 2014.10"
 		sleep 1
 
-elif [ "$ee" == *"$hostOS"* ]
+elif [ "$ee" == "$hostOS" ]
 	then
 		selection=6
 		echo "Install will proceed for Ubuntu 15.04"
 		sleep 1
 
-elif [ "$ff" == *"$hostOS"* ]
+elif [ "$ff" == "$hostOS" ]
 	then
 		selection=7
 		echo "Install will proceed for Ubuntu 14.04"
 		sleep 1
 
-elif [ "$gg" == *"$hostOS_3"* ]
+elif [ "$gg" == "$hostOS_3" ]
 	then
 		selection=8
 		echo "Install will proceed for Ubuntu 12.04"
@@ -193,7 +193,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			wget $aws_linux_2014_09
 
 			echo "--->Installing SignalFx RPM<---"
-			sudo yum -y install SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm
+			sudo yum -y install $aws_linux_2014_09_rpm
 
 			echo "--->Installing collectd and additional plugins<---"
 			sudo yum -y install collectd collectd-disk collectd-write_http
@@ -210,7 +210,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			wget $aws_linux_2015_03
 
 			echo "--->Installing SignalFx RPM<---"
-			sudo yum -y install SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm
+			sudo yum -y install $aws_linux_2015_03_rpm
 
 			echo "--->Installing collectd and additional plugins<---"
 			sudo yum -y install collectd collectd-disk collectd-write_http
@@ -218,7 +218,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			echo "-->Starting Configuration of collectd..."
 			curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
 
-	elif [ ("$selection" -eq 6) -o ("$selection" -eq 7)] #Ubuntu 15.04 & 14.04 Install
+	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]] #Ubuntu 15.04 & 14.04 Install
 		then
 			echo "--->Updating apt-get<---"
 			sudo apt-get -y update
