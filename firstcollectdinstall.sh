@@ -171,7 +171,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL $basic_collectd
+			basic_collectd
 
 			
 	elif [ "$selection" -eq 3 ] #CentOS/RHEL Linux 5 Install
@@ -214,7 +214,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL $basic_collectd
+			basic_collectd
 
 	elif [ "$selection" -eq 5 ] #Amazon Linux 2015.03 Install 
 		then
@@ -231,7 +231,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo yum -y install collectd collectd-disk collectd-write_http
 
 			echo "-->Starting Configuration of collectd..."
-			curl -sSL $basic_collectd
+			basic_collectd
 
 	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]] #Ubuntu 15.04 & 14.04 Install
 		then
@@ -254,7 +254,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo apt-get install collectd -y
 
 			echo "--->Starting Configuration of collectd...<---"	
-			curl -sSL $basic_collectd
+			basic_collectd
 
 	elif [ "$selection" -eq 8 ] #Ubuntu 12.04 Install
 		then
@@ -277,7 +277,7 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			sudo apt-get install collectd -y
 
 			echo "--->Starting Configuration of collectd...<---"	
-			curl -sSL $basic_collectd
+			basic_collectd
 
 fi
 
