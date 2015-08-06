@@ -1,44 +1,55 @@
 #! /bin/bash
 
 #suported OS Variables
-aa=="CentOS Linux 7"
-bb=="CentOS Linux 6"
-bbb=="CentOS release 6"
-cc=="CentOS release 5"
-dd=="Amazon Linux AMI 2014.09"
-ff=="Amazon Linux AMI 2015.03"
-ee=="Ubuntu 15.04"
-ff=="Ubuntu 14.04.1 LTS"
-gg=="Ubuntu 12.04" #maps to hostOS_3
+aa="CentOS Linux 7"
+bb="CentOS Linux 6"
+bbb="CentOS release 6"
+cc="CentOS release 5"
+dd="Amazon Linux AMI 2014.09"
+ff="Amazon Linux AMI 2015.03"
+ee="Ubuntu 15.04"
+ff="Ubuntu 14.04.1 LTS"
+gg="Ubuntu 12.04" #maps to hostOS_3
 
 #addtional variables used
 selection=0
 
 #download location variables
-centos_7=="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
-centos_6=="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
-centos_5=="https://s3.amazonaws.com/public-downloads--signalfuse-com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
-aws_linux_2014_09=="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
-aws_linux_2015_03=="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
+centos_7="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
+centos_6="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
+centos_5="https://s3.amazonaws.com/public-downloads--signalfuse-com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
+aws_linux_2014_09="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
+aws_linux_2015_03="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
 #rpm file variables
-centos_7_rpm=="SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
-centos_6_rpm=="SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
-centos_5_rpm=="SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
-aws_linux_2014_09_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
-aws_linux_2015_03_rpm=="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
+centos_7_rpm="SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
+centos_6_rpm="SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
+centos_5_rpm="SignalFx-RPMs-centos-5-release-1.0-0.noarch.rpm"
+aws_linux_2014_09_rpm="SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
+aws_linux_2015_03_rpm="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
 #determine hostOS
-hostOS==$(sudo cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
-hostOS_2==$(sudo cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
-hostOS_3==$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
+hostOS=$(sudo cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
+hostOS_2=$(sudo cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
+hostOS_3=$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
 
 #Functions used throughout
-basic_collectd()
+basic_collectd() #url to configure collectd asks for hostname & username:password
 {
 	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
 }
-#aggregatedhost_collectd==""
+
+#aggregatedhost_collectd() #url to assume hostname. Asks for username:password
+
+install_collectd()
+{
+	sudo yum -y install collectd 
+}
+
+install_baseplugins()
+{
+	sudo yum -y install collectd-disk collectd-write_http
+}
 
 confirm ()
 {
@@ -50,13 +61,6 @@ confirm ()
     			exit 0
 		fi 
 }
-
-
-
-
-#Variable Checks
-#echo "hostOS is $hostOS<"
-#echo "hostOS_2 is $hostOS_2<"
 
 
 #take "hostOS" and match it up to OS and assign a new value
@@ -148,8 +152,11 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			echo "--->Installing SignalFx RPM<---"
 			sudo yum -y install $centos_7_rpm
 
-			echo "--->Installing collectd and additional plugins<---"
-			sudo yum -y install collectd collectd-disk collectd-write_http
+			echo "--->Installing collectd<---"
+			install_collectd
+
+			echo "--->Installing baseplugins<---"
+			install_baseplugins
 
 			echo "-->Starting Configuration of collectd..."
 			basic_collectd
@@ -167,8 +174,11 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			echo "--->Installing SignalFx RPM<---"
 			sudo yum -y install $centos_6_rpm
 
-			echo "--->Installing collectd and additional plugins<---"
-			sudo yum -y install collectd collectd-disk collectd-write_http
+			echo "--->Installing collectd<---"
+			install_collectd
+
+			echo "--->Installing baseplugins<---"
+			install_baseplugins
 
 			echo "-->Starting Configuration of collectd..."
 			basic_collectd
@@ -193,9 +203,12 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			echo "--->Installing SignalFx RPM<---"
 			sudo yum -y install --nogpgcheck $centos_5_rpm
 
-			echo "--->Installing collectd and additional plugins<---"
-			sudo yum -y install collectd collectd-disk collectd-write_http
+			echo "--->Installing collectd<---"
+			install_collectd
 
+			echo "--->Installing baseplugins<---"
+			install_baseplugins
+			
 			echo "-->Starting Configuration of collectd..."
 			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s --
 
@@ -210,8 +223,11 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			echo "--->Installing SignalFx RPM<---"
 			sudo yum -y install $aws_linux_2014_09_rpm
 
-			echo "--->Installing collectd and additional plugins<---"
-			sudo yum -y install collectd collectd-disk collectd-write_http
+			echo "--->Installing collectd<---"
+			install_collectd
+
+			echo "--->Installing baseplugins<---"
+			install_baseplugins
 
 			echo "-->Starting Configuration of collectd..."
 			basic_collectd
@@ -227,8 +243,11 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 			echo "--->Installing SignalFx RPM<---"
 			sudo yum -y install $aws_linux_2015_03_rpm
 
-			echo "--->Installing collectd and additional plugins<---"
-			sudo yum -y install collectd collectd-disk collectd-write_http
+			echo "--->Installing collectd<---"
+			install_collectd
+
+			echo "--->Installing baseplugins<---"
+			install_baseplugins
 
 			echo "-->Starting Configuration of collectd..."
 			basic_collectd
