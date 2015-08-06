@@ -42,7 +42,7 @@ confirm ()
 	read -r -p "is this correct? [y/N] " response
 		if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
 			then
-    			continue
+    			return
 		else
     			exit 0
 		fi 
