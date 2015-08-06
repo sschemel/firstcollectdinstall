@@ -36,7 +36,7 @@ hostOS_3==$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' 
 #Functions used throughout
 basic_collectd()
 {
-	curl -sSL "https://dl.signalfx.com/collectd-simple | sudo bash -s --"
+	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
 }
 #aggregatedhost_collectd==""
 
