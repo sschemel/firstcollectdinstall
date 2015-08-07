@@ -110,6 +110,31 @@ install_rpm_collectd_procedure()
 	basic_collectd
 }
 
+install_debian_collectd_procedure()
+{
+	echo "--->Updating apt-get<---"
+	sudo apt-get -y update
+
+	if [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]]
+		then
+		echo "--->Installing source package to get SignalFx collectd package<---"
+		sudo apt-get -y install software-properties-common #not used for ubuntu < 13.10
+	elif [[ "$selection" -eq 8 ]]
+		then
+		echo "--->Installing source package to get SignalFx collectd package<---"
+		sudo apt-get install python-software-properties #not needed for ubuntu after version 13.10
+	fi
+		
+		echo "--->Getting SignalFx collectd package<---"
+		sudo add-apt-repository -y ppa:signalfx/collectd-release
+		echo "--->Updating apt-get to reference new SignalFx package<---"
+		sudo apt-get -y update
+		echo "--->Installing collectd and additional plugins<---"
+		sudo apt-get install collectd -y
+		echo "--->Starting Configuration of collectd...<---"	
+		basic_collectd
+}
+
 confirm ()
 {
 	read -r -p "is this correct? [y/N] " response
@@ -154,7 +179,7 @@ elif [ "$dd" == "$hostOS" ] #Amazon Linux 2014.09
 		echo "Install will proceed for Amazon Linux 2014.09"
 		confirm
 
-elif [ "$ee" == "$hostOS" ]
+elif [ "$ee" == "$hostOS" ] #Amazon Linux 2015.03
 	then
 		selection=5
 		needed_rpm=$aws_linux_2015_03
@@ -240,51 +265,9 @@ if [[ ( "$selection" -eq 1 ) || ( "$selection" -eq 2 ) || ( "$selection" -eq 4 )
 			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s --
 	
 
-	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]] #Ubuntu 15.04 & 14.04 Install
+	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) || ( "$selection" -eq 8 ) ]] #Ubuntu 15.04 & 14.04 Install
 		then
-			echo "--->Updating apt-get<---"
-			sudo apt-get -y update
-
-			echo "--->Installing source package to get SignalFx collectd package<---"
-			sudo apt-get -y install software-properties-common
-
-			#echo "--->Installing source package to get SignalFx collectd package<---"
-			#sudo apt-get install python-software-properties #not needed for ubuntu after version 13.10
-
-			echo "--->Getting SignalFx collectd package<---"
-			sudo add-apt-repository -y ppa:signalfx/collectd-release
-
-			echo "--->Updating apt-get to reference new SignalFx package<---"
-			sudo apt-get -y update
-
-			echo "--->Installing collectd and additional plugins<---"
-			sudo apt-get install collectd -y
-
-			echo "--->Starting Configuration of collectd...<---"	
-			basic_collectd
-
-	elif [ "$selection" -eq 8 ] #Ubuntu 12.04 Install
-		then
-			echo "--->Updating apt-get<---"
-			sudo apt-get -y update
-
-			#echo "--->Installing source package to get SignalFx collectd package<---" #not used for ubuntu < 13.10
-			#sudo apt-get -y install software-properties-common
-
-			echo "--->Installing source package to get SignalFx collectd package<---"
-			sudo apt-get install python-software-properties #not needed for ubuntu > 13.10
-
-			echo "--->Getting SignalFx collectd package<---"
-			sudo add-apt-repository -y ppa:signalfx/collectd-release
-
-			echo "--->Updating apt-get to reference new SignalFx package<---"
-			sudo apt-get -y update
-
-			echo "--->Installing collectd and additional plugins<---"
-			sudo apt-get install collectd -y
-
-			echo "--->Starting Configuration of collectd...<---"	
-			basic_collectd
+			install_debian_collectd_procedure
 
 fi
 
