@@ -1,6 +1,6 @@
 #! /bin/bash
 #exec 3>&1 1>> sfx_install_collectd.log 2>&1
-#print_n_log="| tee /dev/fd/3"
+#print_n_log=logging function
 
 #variables used
 selection=0
