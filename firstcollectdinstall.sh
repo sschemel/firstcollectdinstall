@@ -39,7 +39,7 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 install_success()
 {
 	echo "
-	Install is now compelete and you can view your metrics at app.signalfx.com.
+Install is now compelete and you can view your metrics at app.signalfx.com.
 If you had any issues please contact support@signalfx.com
 "
 
@@ -175,9 +175,6 @@ install_debian_collectd_procedure() #install function for debian collectd
 	"
 	sudo apt-get install collectd -y
 	
-	echo "
-	--->Starting Configuration of collectd...<---
-	"	
 	basic_collectd
 
 	install_success
