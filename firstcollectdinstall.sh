@@ -150,14 +150,14 @@ install_debian_collectd_procedure() #install function for debian collectd
 			echo "
 			--->Installing source package to get SignalFx collectd package<---
 			"
-			sudo apt-get -y install software-properties-common #not used for ubuntu < 13.10
+			sudo apt-get -y install software-properties-common #for ubuntu > 13.10
 	
 	elif [[ "$selection" -eq 8 ]]
 		then
 			echo "
 			--->Installing source package to get SignalFx collectd package<---
 			"
-			sudo apt-get install python-software-properties #not needed for ubuntu after version 13.10
+			sudo apt-get install python-software-properties #for unbuntu < 13.10
 	fi
 		
 	echo "
@@ -227,8 +227,8 @@ case $hostOS in
 		confirm
 	;;
 	"Ubuntu 14.04.1 LTS")
-		selection=8
-		echo "Install will proceed for Ubuntu 12.04"
+		selection=7
+		echo "Install will proceed for Ubuntu 14.04"
 		confirm
 	;;
 	*)
