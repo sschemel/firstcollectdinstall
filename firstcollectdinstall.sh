@@ -1,5 +1,6 @@
 #! /bin/bash
-#exec 1> install_sfx_collectd.log 2>&1
+#exec 3>&1 1>> sfx_install_collectd.log 2>&1
+#print_n_log="| tee /dev/fd/3"
 
 #variables used
 selection=0
@@ -29,7 +30,7 @@ hostOS=$(cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' |
 basic_collectd() #url to configure collectd asks for hostname & username:password
 {
 	echo "-->Starting Configuration of collectd..."
-	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- 
 }
 #aggregatedhost_collectd() #url to assume hostname. Asks for username:password
 
