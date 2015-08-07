@@ -1,5 +1,5 @@
 #! /bin/bash
-exec 1> install_sfx_collectd.log 2>&1
+#exec 1> install_sfx_collectd.log 2>&1
 
 #variables used
 selection=0
