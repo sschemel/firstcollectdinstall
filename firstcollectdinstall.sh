@@ -6,13 +6,15 @@ bb="CentOS Linux 6"
 bbb="CentOS release 6"
 cc="CentOS release 5"
 dd="Amazon Linux AMI 2014.09"
-ff="Amazon Linux AMI 2015.03"
-ee="Ubuntu 15.04"
-ff="Ubuntu 14.04.1 LTS"
-gg="Ubuntu 12.04" #maps to hostOS_3
+ee="Amazon Linux AMI 2015.03"
+ff="Ubuntu 15.04"
+gg="Ubuntu 14.04.1 LTS"
+hh="Ubuntu 12.04" #maps to hostOS_3
 
 #addtional variables used
 selection=0
+needed_rpm=null
+needed_rpm_name=null
 
 #download location variables
 centos_7="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
@@ -36,19 +38,76 @@ hostOS_3=$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' |
 #Functions used throughout
 basic_collectd() #url to configure collectd asks for hostname & username:password
 {
+	echo "-->Starting Configuration of collectd..."
 	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
 }
-
 #aggregatedhost_collectd() #url to assume hostname. Asks for username:password
 
-install_collectd()
+give_needed_os()
 {
+	if [[ "$selection" -eq 1 ]]
+	 	then
+	 	needed_rpm=$centos_7
+		needed_rpm_name=$centos_7_rpm
+	elif [[ "$selection" -eq 2 ]]
+	 	then
+	 	needed_rpm=$centos_6
+		needed_rpm_name=$centos_6_rpm
+	elif [[ "$selection" -eq 3 ]]
+		then
+		needed_rpm=$centos_5
+		needed_rpm_name=$centos_5_rpm
+	elif [[ "$selection" -eq 4 ]] 
+		then
+		needed_rpm=$aws_linux_2014_09
+		needed_rpm_name=$aws_linux_2014_09
+	elif [[ "$selection" -eq 5 ]] 
+		then
+		needed_rpm=$aws_linux_2015_03
+		needed_rpm_name=$aws_linux_2015_03_rpm
+	fi
+}
+
+#RPM Based Linux Functions
+update_wget() #update wget
+{
+	echo "--->Updating wget<---"
+	sudo yum -y install wget
+}
+
+download_sfx_rpm() #download signalfx rpm for collectd
+{
+	echo "--->Downloading SignalFx RPM<---"
+	wget $needed_rpm
+}
+
+install_sfx_rpm() #install signalfx rpm for collectd
+{
+	echo "--->Installing SignalFx RPM<---"
+	sudo yum -y install $needed_rpm_name
+}
+
+install_collectd() #install collectd from signalfx rpm 
+{
+	echo "--->Installing collectd<---"
 	sudo yum -y install collectd 
 }
 
-install_baseplugins()
+install_baseplugins() #install base plugins signalfx deems nessescary 
 {
+	echo "--->Installing baseplugins<---"
 	sudo yum -y install collectd-disk collectd-write_http
+}
+
+install_rpm_collectd_procedure()
+{
+	update_wget
+	download_sfx_rpm
+	install_sfx_rpm
+	install_collectd
+	install_collectd
+	install_baseplugins
+	basic_collectd
 }
 
 confirm ()
@@ -62,51 +121,60 @@ confirm ()
 		fi 
 }
 
-
 #take "hostOS" and match it up to OS and assign a new value
 if [ "$aa" == "$hostOS" ] #CentOS/RHEL Linux 7 Check
 	then 
 		selection=1
+		needed_rpm=$centos_7
+		needed_rpm_name=$centos_7_rpm
 		echo "Install will proceed for Centos/RHEL Linux 7"
 		confirm
 			
 elif [[ ( "$bb" = "$hostOS" ) || ( "$bbb" = "$hostOS_2" ) ]] #CentOS/RHEL Linux 6 Check
 	then 
 		selection=2
+		needed_rpm=$centos_6
+		needed_rpm_name=$centos_6_rpm
 		echo "Install will proceed for Centos/RHEL Linux 6"
 		confirm
 		
 elif [ "$cc" == "$hostOS_2" ] #CentOS/RHEL Linux 5 Check #tested and works
 	then
 		selection=3
+		needed_rpm=$centos_5
+		needed_rpm_name=$centos_5_rpm
 		echo "Install will proceed for Centos/RHEL Linux 5"
 		confirm
 
 elif [ "$dd" == "$hostOS" ] #Amazon Linux 2014.09
 	then
 		selection=4
+		needed_rpm=$aws_linux_2014_09
+		needed_rpm_name=$aws_linux_2014_09_rpm
 		echo "Install will proceed for Amazon Linux 2014.09"
 		confirm
 
-elif [ "$ff" == "$hostOS" ]
+elif [ "$ee" == "$hostOS" ]
 	then
 		selection=5
-		echo "Install will proceed for Amazon Linux 2014.10"
+		needed_rpm=$aws_linux_2015_03
+		needed_rpm_name=$aws_linux_2015_03_rpm
+		echo "Install will proceed for Amazon Linux 2015.03"
 		confirm
 
-elif [ "$ee" == "$hostOS" ]
+elif [ "$ff" == "$hostOS" ]
 	then
 		selection=6
 		echo "Install will proceed for Ubuntu 15.04"
 		confirm
 
-elif [ "$ff" == "$hostOS" ]
+elif [ "$gg" == "$hostOS" ]
 	then
 		selection=7
 		echo "Install will proceed for Ubuntu 14.04"
 		confirm
 
-elif [ "$gg" == "$hostOS_3" ]
+elif [ "$hh" == "$hostOS_3" ]
 	then
 		selection=8
 		echo "Install will proceed for Ubuntu 12.04"
@@ -120,7 +188,7 @@ else
 		2. RHEL/Centos 6.x
 		3. REHL/Centos 5.x
 		4. Amazon Linux 2014.09
-		5. Amazon Linux 2014.10
+		5. Amazon Linux 2015.03
 		6. Ubuntu 15.04
 		7. Ubuntu 14.04
 		8. Ubuntu 12.04
@@ -133,57 +201,16 @@ else
 collectd with our RPM. You need to vist ~link~ for detailed 
 instrucitons on how to install collectd." && exit 0
 			else
-				true
-
+				give_needed_os
 			fi
-
 fi
 
 
 #Check needed dependencies, install collectd, and configure to send to SignalFX
-if [ "$selection" -eq 1 ] #centos 7 linux install
+if [[ ( "$selection" -eq 1 ) || ( "$selection" -eq 2 ) || ( "$selection" -eq 4 ) || ( "$selection" -eq 5 ) ]] #centos 7 & 6 linux install
 		then
-			echo "--->Updating wget<---"
-			sudo yum -y install wget
+			install_rpm_collectd_procedure
 
-			echo "--->Downloading SignalFx RPM<---"
-			wget $centos_7
-
-			echo "--->Installing SignalFx RPM<---"
-			sudo yum -y install $centos_7_rpm
-
-			echo "--->Installing collectd<---"
-			install_collectd
-
-			echo "--->Installing baseplugins<---"
-			install_baseplugins
-
-			echo "-->Starting Configuration of collectd..."
-			basic_collectd
-
-			
-
-	elif [ "$selection" -eq 2 ] #centos 6 linux install
-		then
-			echo "--->Updating wget<---"
-			sudo yum -y install wget
-
-			echo "--->Downloading SignalFx RPM<---"
-			wget $centos_6
-		
-			echo "--->Installing SignalFx RPM<---"
-			sudo yum -y install $centos_6_rpm
-
-			echo "--->Installing collectd<---"
-			install_collectd
-
-			echo "--->Installing baseplugins<---"
-			install_baseplugins
-
-			echo "-->Starting Configuration of collectd..."
-			basic_collectd
-
-			
 	elif [ "$selection" -eq 3 ] #CentOS/RHEL Linux 5 Install
 		then
 			#echo "--->Updating Yum<---"
@@ -208,49 +235,10 @@ if [ "$selection" -eq 1 ] #centos 7 linux install
 
 			echo "--->Installing baseplugins<---"
 			install_baseplugins
-			
+
 			echo "-->Starting Configuration of collectd..."
 			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s --
-
-	elif [ "$selection" -eq 4 ] #Amazon Linux 2014.09 Install 
-		then
-			echo "--->Installing wget<---"
-			sudo yum -y install wget
-
-			echo "--->Downloading SignalFx RPM<---"
-			wget $aws_linux_2014_09
-
-			echo "--->Installing SignalFx RPM<---"
-			sudo yum -y install $aws_linux_2014_09_rpm
-
-			echo "--->Installing collectd<---"
-			install_collectd
-
-			echo "--->Installing baseplugins<---"
-			install_baseplugins
-
-			echo "-->Starting Configuration of collectd..."
-			basic_collectd
-
-	elif [ "$selection" -eq 5 ] #Amazon Linux 2015.03 Install 
-		then
-			echo "--->Installing wget<---"
-			sudo yum -y install wget
-
-			echo "--->Downloading SignalFx RPM<---"
-			wget $aws_linux_2015_03
-
-			echo "--->Installing SignalFx RPM<---"
-			sudo yum -y install $aws_linux_2015_03_rpm
-
-			echo "--->Installing collectd<---"
-			install_collectd
-
-			echo "--->Installing baseplugins<---"
-			install_baseplugins
-
-			echo "-->Starting Configuration of collectd..."
-			basic_collectd
+	
 
 	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]] #Ubuntu 15.04 & 14.04 Install
 		then
