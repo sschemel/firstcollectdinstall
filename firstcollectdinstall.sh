@@ -36,9 +36,9 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 "
 	if [ -z $1 ]
 		then
-		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
-	else
 		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t $1
+	else
+		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
 	fi
 
 }
