@@ -23,15 +23,15 @@ aws_linux_2015_03_rpm="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.
 
 #determine hostOS
 hostOS=$(cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
-#hostOS_2=$(sudo cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
-#hostOS_3=$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
+hostOS_2=$(sudo cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
+hostOS_3=$(sudo cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
 
 #Functions used throughout
 basic_collectd() #url to configure collectd asks for hostname & username:password
 {
 	echo "
-	-->Starting Configuration of collectd...
-	"
+-->Starting Configuration of collectd...
+"
 	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- 
 }
 #aggregatedhost_collectd() #url to assume hostname. Asks for username:password
@@ -77,27 +77,28 @@ get_os_input()
 {
 	#echo $selection #check for currently value of selection
 	echo "
-	We were unable to automatically determine the verions of Linux you are on!
-	Please enter the the number of the OS you wish to install for:
-	1. RHEL/Centos 7
-	2. RHEL/Centos 6.x
-	3. REHL/Centos 5.x
-	4. Amazon Linux 2014.09
-	5. Amazon Linux 2015.03
-	6. Ubuntu 15.04
-	7. Ubuntu 14.04
-	8. Ubuntu 12.04
-	9. Other
-	"
+We were unable to automatically determine the verions of Linux you are on!
+Please enter the the number of the OS you wish to install for:
+1. RHEL/Centos 7
+2. RHEL/Centos 6.x
+3. REHL/Centos 5.x
+4. Amazon Linux 2014.09
+5. Amazon Linux 2015.03
+6. Ubuntu 15.04
+7. Ubuntu 14.04
+8. Ubuntu 12.04
+9. Other
+"
 	read selection
 
 	if [ "$selection" -eq 9 ]
 		then
 			echo "
-			We currently do not support any other versions of
-	collectd with our RPM. You need to vist ~link~ for detailed 
-	instrucitons on how to install collectd.
+We currently do not support any other versions of
+collectd with our RPM. You need to vist ~link~ for detailed 
+instrucitons on how to install collectd.
 	" && exit 0
+	
 	else
 			get_needed_os
 	fi
@@ -106,72 +107,71 @@ get_os_input()
 #RPM Based Linux Functions
 install_rpm_collectd_procedure() #install function for RPM collectd
 {
+
 	echo "
-	--->Updating wget<---
-	"
+--->Updating wget<---
+"
 	sudo yum -y install wget #update wget
 
 	echo "
-	--->Downloading SignalFx RPM<---
-	"
+--->Downloading SignalFx RPM<---
+"
 	wget $needed_rpm #download signalfx rpm for collectd
-	
+
 	echo "
-	--->Installing SignalFx RPM<---
-	"
+--->Installing SignalFx RPM<---
+"
 	sudo yum -y install $needed_rpm_name  #install signalfx rpm for collectd
-	
+
 	echo "
-	--->Installing collectd<---
-	"
+--->Installing collectd<---
+"
 	sudo yum -y install collectd #install collectd from signalfx rpm 
-	
+
 	echo "
-	--->Installing baseplugins<---
-	"
+--->Installing baseplugins<---
+"
 	sudo yum -y install collectd-disk collectd-write_http #install base plugins signalfx deems nessescary
-	
+
 	basic_collectd
-
 	install_success
-
 }
 
 #Debian Based Linux Functions
 install_debian_collectd_procedure() #install function for debian collectd
 {
 	echo "
-	--->Updating apt-get<---
+--->Updating apt-get<---
 	"
 	sudo apt-get -y update
 
 	if [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]]
 		then
 			echo "
-			--->Installing source package to get SignalFx collectd package<---
+--->Installing source package to get SignalFx collectd package<---
 			"
 			sudo apt-get -y install software-properties-common #for ubuntu > 13.10
 	
 	elif [[ "$selection" -eq 8 ]]
 		then
 			echo "
-			--->Installing source package to get SignalFx collectd package<---
+--->Installing source package to get SignalFx collectd package<---
 			"
 			sudo apt-get install python-software-properties #for unbuntu < 13.10
 	fi
 		
 	echo "
-	--->Getting SignalFx collectd package<---
+--->Getting SignalFx collectd package<---
 	"
 	sudo add-apt-repository -y ppa:signalfx/collectd-release
 	
 	echo "
-	--->Updating apt-get to reference new SignalFx package<---
+--->Updating apt-get to reference new SignalFx package<---
 	"
 	sudo apt-get -y update
 	
 	echo "
-	--->Installing collectd and additional plugins<---
+--->Installing collectd and additional plugins<---
 	"
 	sudo apt-get install collectd -y
 	
@@ -232,7 +232,28 @@ case $hostOS in
 		confirm
 	;;
 	*)
-    	get_os_input 
+    	case $hostOS_2 in 
+    		"CentOS release 6")
+				selection=2
+				needed_rpm=$centos_6
+				needed_rpm_name=$centos_6_rpm
+				echo "Install will proceed for Centos/RHEL Linux 6"
+				confirm
+				;;
+			*)
+				case $hostOS_3 in
+					"CentOS release 5"
+					selection=3
+					needed_rpm=$centos_5
+					needed_rpm_name=$centos_5_rpm
+					echo "Install will proceed for Centos/RHEL Linux 5"
+					confirm
+					;;
+				*)
+				esac
+				;;
+		esac
+		;;
     ;;
 esac
 
