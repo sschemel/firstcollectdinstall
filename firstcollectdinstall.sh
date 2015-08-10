@@ -2,6 +2,8 @@
 #exec 3>&1 1>> sfx_install_collectd.log 2>&1
 #print_n_log=logging function
 
+echo "$1"
+
 #variables used
 selection=0
 needed_rpm=null_rpm_link
@@ -32,7 +34,13 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 	echo "
 -->Starting Configuration of collectd...
 "
-	curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- 
+	if [ $1 -eq 0 ]
+		then
+		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+	else
+		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t $1
+	fi
+
 }
 #aggregatedhost_collectd() #url to assume hostname. Asks for username:password
 
