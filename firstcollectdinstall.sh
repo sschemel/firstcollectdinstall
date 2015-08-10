@@ -3,6 +3,7 @@
 #print_n_log=logging function
 
 echo "$1"
+api_token=$1
 
 #variables used
 selection=0
@@ -34,11 +35,11 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 	echo "
 -->Starting Configuration of collectd...
 "
-	if [ -z $1 ]
+	if [ -z $api_token ]
 		then
-		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t $1
-	else
 		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+	else
+		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t $api_token
 	fi
 
 }
