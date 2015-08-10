@@ -242,19 +242,20 @@ case $hostOS in
 				;;
 			*)
 				case $hostOS_3 in
-					"CentOS release 5"
-					selection=3
-					needed_rpm=$centos_5
-					needed_rpm_name=$centos_5_rpm
-					echo "Install will proceed for Centos/RHEL Linux 5"
-					confirm
-					;;
-				*)
-				esac
+					"CentOS release 5")
+						selection=3
+						needed_rpm=$centos_5
+						needed_rpm_name=$centos_5_rpm
+						echo "Install will proceed for Centos/RHEL Linux 5"
+						confirm
+						;;
+				*) 
 				;;
+				esac
+			;;
 		esac
-		;;
-    ;;
+	;;
+    
 esac
 
 
