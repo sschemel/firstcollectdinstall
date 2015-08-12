@@ -216,26 +216,26 @@ case $hostOS in
 		echo "Install will proceed for Centos/RHEL Linux 6"
 		confirm
 	;;
-	"Amazon Linux AMI 2014.09")
+	"Amazon Linux AMI 2014.09") #hostOS
 		selection=4
 		needed_rpm=$aws_linux_2014_09
 		needed_rpm_name=$aws_linux_2014_09_rpm
 		echo "Install will proceed for Amazon Linux 2014.09"
 		confirm
 	;;
-	"Amazon Linux AMI 2015.03")
+	"Amazon Linux AMI 2015.03") #hostOS
 		selection=5
 		needed_rpm=$aws_linux_2015_03
 		needed_rpm_name=$aws_linux_2015_03_rpm
 		echo "Install will proceed for Amazon Linux 2015.03"
 		confirm
 	;;
-	"Ubuntu 15.04")
+	"Ubuntu 15.04") #hostOS
 		selection=6
 		echo "Install will proceed for Ubuntu 15.04"
 		confirm
 	;;
-	"Ubuntu 14.04.1 LTS")
+	"Ubuntu 14.04.1 LTS") #hostOS
 		selection=7
 		echo "Install will proceed for Ubuntu 14.04"
 		confirm
@@ -259,7 +259,7 @@ case $hostOS in
 						confirm
 						;;
 				*) 
-					get_os_input()
+					get_os_input
 				;;
 				esac
 			;;
