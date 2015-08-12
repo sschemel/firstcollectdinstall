@@ -298,8 +298,12 @@ if [[ ( "$selection" -eq 1 ) || ( "$selection" -eq 2 ) || ( "$selection" -eq 4 )
 			echo "--->Installing baseplugins<---"
 			sudo yum -y install collectd-disk collectd-write_http #install base plugins signalfx deems nessescary
 
+			echo "We need you to provide the API Token for your org. This can be found @ https://app.signalfx.com/#/myprofile"
+			echo "Please enter your API Token: "
+			read api_token
+
 			echo "-->Starting Configuration of collectd..."
-			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s --
+			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s -- -t $api_token
 	
 
 	elif [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) || ( "$selection" -eq 8 ) ]] #Ubuntu 15.04 & 14.04 & 12.04 Install
