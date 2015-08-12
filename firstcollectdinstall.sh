@@ -293,10 +293,10 @@ if [[ ( "$selection" -eq 1 ) || ( "$selection" -eq 2 ) || ( "$selection" -eq 4 )
 			sudo yum -y install --nogpgcheck $centos_5_rpm
 
 			echo "--->Installing collectd<---"
-			install_collectd
+			sudo yum -y install collectd #install collectd from signalfx rpm 
 
 			echo "--->Installing baseplugins<---"
-			install_baseplugins
+			sudo yum -y install collectd-disk collectd-write_http #install base plugins signalfx deems nessescary
 
 			echo "-->Starting Configuration of collectd..."
 			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s --
