@@ -2,7 +2,7 @@
 #exec 3>&1 1>> sfx_install_collectd.log 2>&1
 #print_n_log=logging function
 
-echo "$1"
+#echo "$1"
 api_token=$1
 
 #variables used
@@ -27,7 +27,7 @@ aws_linux_2015_03_rpm="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.
 #determine hostOS
 hostOS=$(cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
 hostOS_2=$(cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
-hostOS_3=$(cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
+#hostOS_3=$(cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
 
 #Functions used throughout
 basic_collectd() #url to configure collectd asks for hostname & username:password
@@ -202,7 +202,7 @@ confirm ()
 
 #take "hostOS" and match it up to OS and assign a new value
 case $hostOS in 
-	"CentOS Linux 7")
+	"CentOS Linux 7") #hostOS
 		selection=1
 		needed_rpm=$centos_7
 		needed_rpm_name=$centos_7_rpm
@@ -242,26 +242,24 @@ case $hostOS in
 	;;
 	*)
     	case $hostOS_2 in 
-    		"CentOS release 6")
+    		"CentOS release 6") #hostOS_2
 				selection=2
 				needed_rpm=$centos_6
 				needed_rpm_name=$centos_6_rpm
 				echo "Install will proceed for Centos/RHEL Linux 6"
 				confirm
 				;;
-			*)
-				case $hostOS_3 in
-					"CentOS release 5")
-						selection=3
-						needed_rpm=$centos_5
-						needed_rpm_name=$centos_5_rpm
-						echo "Install will proceed for Centos/RHEL Linux 5"
-						confirm
-						;;
-				*) 
-					get_os_input
+		
+			
+			"CentOS release 5") #hostOS_2
+				selection=3
+				needed_rpm=$centos_5
+				needed_rpm_name=$centos_5_rpm
+				echo "Install will proceed for Centos/RHEL Linux 5"
+				confirm
 				;;
-				esac
+		*) 
+			get_os_input
 			;;
 		esac
 	;;
