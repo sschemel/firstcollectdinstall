@@ -259,6 +259,7 @@ case $hostOS in
 						confirm
 						;;
 				*) 
+					get_os_input()
 				;;
 				esac
 			;;
