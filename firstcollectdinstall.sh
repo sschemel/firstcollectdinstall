@@ -26,7 +26,7 @@ aws_linux_2015_03_rpm="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.
 
 #determine hostOS
 hostOS=$(cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
-printf "$hostOS this should be printf\n"
+printf "$hostOS" "this should be printf\n"
 echo "$hostOS echo of host"
 
 if [ ! -f /etc/redhat-release ]
@@ -255,7 +255,7 @@ case $hostOS in
 	;;
 	"Ubuntu 15.04" | "Ubuntu 14.04.1 LTS") #hostOS
 		selection=6 #6 or 7 install for ubuntu > 13.10
-		printf "Install will proceed for" $hostOS "\n"
+		printf ("Install will proceed for" "$hostOS" "\n");
 		confirm
 		install_debian_collectd_procedure
 	;;
