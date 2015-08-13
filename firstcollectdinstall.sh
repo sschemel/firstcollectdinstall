@@ -1,14 +1,10 @@
 #! /bin/bash
-#exec 3>&1 1>> sfx_install_collectd.log 2>&1
-#print_n_log=logging function
-
-#echo "$1"
-api_token=$1
 
 #variables used
 selection=0
 needed_rpm=null_rpm_link
 needed_rpm_name=null_rpm_name
+api_token=$1
 
 #download location variables
 centos_7="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
@@ -27,12 +23,11 @@ aws_linux_2015_03_rpm="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.
 #determine hostOS
 hostOS=$(cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
 hostOS_2=$(cat /etc/redhat-release | head -c 16) #older versions of RPM based linux that don't have version in PRETTY_NAME format
-#hostOS_3=$(cat /etc/*-release | grep DISTRIB_DESCRIPTION | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//' | head -c 12)
 
 #Functions used throughout
 basic_collectd() #url to configure collectd asks for hostname & username:password
 {
-	echo "
+	printf "
 -->Starting Configuration of collectd...
 "
 	if [ -z $api_token ]
@@ -47,9 +42,9 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 
 install_success()
 {
-	echo "
-Install is now compelete and you can view your metrics at app.signalfx.com.
-If you had any issues please contact support@signalfx.com
+	printf "
+Install now verify that you can view your metrics at app.signalfx.com.
+If you have any issues please contact support@signalfx.com
 "
 
 }
@@ -84,8 +79,8 @@ get_needed_os()
 
 get_os_input() 
 {
-	#echo $selection #check for currently value of selection
-	echo "
+	#check for currently value of selection
+	printf "
 We were unable to automatically determine the verions of Linux you are on!
 Please enter the the number of the OS you wish to install for:
 1. RHEL/Centos 7
@@ -102,7 +97,7 @@ Please enter the the number of the OS you wish to install for:
 
 	if [ "$selection" -eq 9 ]
 		then
-			echo "
+			printf "
 We currently do not support any other versions of
 collectd with our RPM. You need to vist ~link~ for detailed 
 instrucitons on how to install collectd.
@@ -117,27 +112,27 @@ instrucitons on how to install collectd.
 install_rpm_collectd_procedure() #install function for RPM collectd
 {
 
-	echo "
+	printf "
 --->Updating wget<---
 "
 	sudo yum -y install wget #update wget
 
-	echo "
+	printf "
 --->Downloading SignalFx RPM<---
 "
 	wget $needed_rpm #download signalfx rpm for collectd
 
-	echo "
+	printf "
 --->Installing SignalFx RPM<---
 "
 	sudo yum -y install $needed_rpm_name  #install signalfx rpm for collectd
 
-	echo "
+	printf "
 --->Installing collectd<---
 "
 	sudo yum -y install collectd #install collectd from signalfx rpm 
 
-	echo "
+	printf "
 --->Installing baseplugins<---
 "
 	sudo yum -y install collectd-disk collectd-write_http #install base plugins signalfx deems nessescary
@@ -149,37 +144,37 @@ install_rpm_collectd_procedure() #install function for RPM collectd
 #Debian Based Linux Functions
 install_debian_collectd_procedure() #install function for debian collectd
 {
-	echo "
+	printf "
 --->Updating apt-get<---
 	"
 	sudo apt-get -y update
 
 	if [[ ( "$selection" -eq 6)  || ( "$selection" -eq 7 ) ]]
 		then
-			echo "
+			printf "
 --->Installing source package to get SignalFx collectd package<---
 			"
 			sudo apt-get -y install software-properties-common #for ubuntu > 13.10
 	
 	elif [[ "$selection" -eq 8 ]]
 		then
-			echo "
+			printf "
 --->Installing source package to get SignalFx collectd package<---
 			"
 			sudo apt-get install python-software-properties #for unbuntu < 13.10
 	fi
 		
-	echo "
+	printf "
 --->Getting SignalFx collectd package<---
 	"
 	sudo add-apt-repository -y ppa:signalfx/collectd-release
 	
-	echo "
+	printf "
 --->Updating apt-get to reference new SignalFx package<---
 	"
 	sudo apt-get -y update
 	
-	echo "
+	printf "
 --->Installing collectd and additional plugins<---
 	"
 	sudo apt-get install collectd -y
@@ -206,38 +201,38 @@ case $hostOS in
 		selection=1
 		needed_rpm=$centos_7
 		needed_rpm_name=$centos_7_rpm
-		echo "Install will proceed for Centos/RHEL Linux 7"
+		printf "Install will proceed for Centos/RHEL Linux 7"
 		confirm
 	;;
 	"CentOS Linux 6")
 		selection=2
 		needed_rpm=$centos_6
 		needed_rpm_name=$centos_6_rpm
-		echo "Install will proceed for Centos/RHEL Linux 6"
+		printf "Install will proceed for Centos/RHEL Linux 6"
 		confirm
 	;;
 	"Amazon Linux AMI 2014.09") #hostOS
 		selection=4
 		needed_rpm=$aws_linux_2014_09
 		needed_rpm_name=$aws_linux_2014_09_rpm
-		echo "Install will proceed for Amazon Linux 2014.09"
+		printf "Install will proceed for Amazon Linux 2014.09"
 		confirm
 	;;
 	"Amazon Linux AMI 2015.03") #hostOS
 		selection=5
 		needed_rpm=$aws_linux_2015_03
 		needed_rpm_name=$aws_linux_2015_03_rpm
-		echo "Install will proceed for Amazon Linux 2015.03"
+		printf "Install will proceed for Amazon Linux 2015.03"
 		confirm
 	;;
 	"Ubuntu 15.04") #hostOS
 		selection=6
-		echo "Install will proceed for Ubuntu 15.04"
+		printf "Install will proceed for Ubuntu 15.04"
 		confirm
 	;;
 	"Ubuntu 14.04.1 LTS") #hostOS
 		selection=7
-		echo "Install will proceed for Ubuntu 14.04"
+		printf "Install will proceed for Ubuntu 14.04"
 		confirm
 	;;
 	*)
@@ -246,7 +241,7 @@ case $hostOS in
 				selection=2
 				needed_rpm=$centos_6
 				needed_rpm_name=$centos_6_rpm
-				echo "Install will proceed for Centos/RHEL Linux 6"
+				printf "Install will proceed for Centos/RHEL Linux 6"
 				confirm
 				;;
 		
@@ -255,7 +250,7 @@ case $hostOS in
 				selection=3
 				needed_rpm=$centos_5
 				needed_rpm_name=$centos_5_rpm
-				echo "Install will proceed for Centos/RHEL Linux 5"
+				printf "Install will proceed for Centos/RHEL Linux 5"
 				confirm
 				;;
 		*) 
@@ -274,34 +269,33 @@ if [[ ( "$selection" -eq 1 ) || ( "$selection" -eq 2 ) || ( "$selection" -eq 4 )
 
 	elif [ "$selection" -eq 3 ] #CentOS/RHEL Linux 5 Install
 		then
-			#echo "--->Updating Yum<---"
-			#sudo yum -y update
-			echo "--->Installing Simple-Json<---"
+			
+			printf "--->Installing Simple-Json<---"
 			sudo yum -y install python-simplejson
 
-			echo "--->Updating Openssl<---"
+			printf "--->Updating Openssl<---"
 			sudo yum -y update openssl 
 
-			echo "--->Installing wget<---"
+			printf "--->Installing wget<---"
 			sudo yum -y install wget
 
-			echo "--->Downloading SignalFx RPM<---"
+			printf "--->Downloading SignalFx RPM<---"
 			wget $centos_5
 		
-			echo "--->Installing SignalFx RPM<---"
+			printf "--->Installing SignalFx RPM<---"
 			sudo yum -y install --nogpgcheck $centos_5_rpm
 
-			echo "--->Installing collectd<---"
+			printf "--->Installing collectd<---"
 			sudo yum -y install collectd #install collectd from signalfx rpm 
 
-			echo "--->Installing baseplugins<---"
+			printf "--->Installing baseplugins<---"
 			sudo yum -y install collectd-disk collectd-write_http #install base plugins signalfx deems nessescary
 
-			echo "We need you to provide the API Token for your org. This can be found @ https://app.signalfx.com/#/myprofile"
-			echo "Please enter your API Token: "
+			printf "We need you to provide the API Token for your org. This can be found @ https://app.signalfx.com/#/myprofile"
+			printf "Please enter your API Token: "
 			read api_token
 
-			echo "-->Starting Configuration of collectd..."
+			printf "-->Starting Configuration of collectd..."
 			curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s -- -t $api_token
 	
 
