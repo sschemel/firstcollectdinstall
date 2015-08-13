@@ -13,6 +13,10 @@ centos_5="https://s3.amazonaws.com/public-downloads--signalfuse-com/rpms/SignalF
 aws_linux_2014_09="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2014_09-release-1.0-0.noarch.rpm"
 aws_linux_2015_03="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
+#configuration url variables
+config_wout_token="https://dl.signalfx.com/collectd-simple | sudo bash -s --"
+config_w_token="https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t"
+
 #rpm file variables
 centos_7_rpm="SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
 centos_6_rpm="SignalFx-RPMs-centos-6-release-1.0-0.noarch.rpm"
@@ -30,9 +34,9 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 	printf "Starting Configuration of collectd... \n"
 	if [ -z "$api_token" ]
 		then
-		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
+		curl -sSL config_wout_token
 	else
-		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t "$api_token"
+		curl -sSL config_w_token "$api_token"
 	fi
 
 }
@@ -83,8 +87,8 @@ get_needed_os()
 get_os_input() 
 {
 	#check for currently value of selection
-	printf "\nWe were unable to automatically determine the verions of Linux you are on!
-Please enter the the number of the OS you wish to install for:
+	printf "\nWe were unable to automatically determine the version of Linux you are on!
+Please enter the number of the OS you wish to install for:
 1. RHEL/Centos 7
 2. RHEL/Centos 6.x
 3. REHL/Centos 5.x
@@ -98,9 +102,9 @@ Please enter the the number of the OS you wish to install for:
 
 	if [ "$selection" -eq 9 ]
 		then
-			printf "We currently do not support any other versions of
+			printf "We currently do not support any other OS
 collectd with our RPM. You need to vist ~link~ for detailed 
-instrucitons on how to install collectd. \n" && exit 0
+instructions on how to install collectd. \n" && exit 0
 	
 	else
 			get_needed_os
@@ -230,6 +234,7 @@ case $hostOS in
 		install_rpm_collectd_procedure
 	;;
 	"Ubuntu 15.04" | "Ubuntu 14.04.1 LTS") #hostOS
+		selection=6 #6 or 7 install for ubuntu > 13.10
 		printf "Install will proceed for " "$hostOS" "\n"
 		confirm
 		install_debian_collectd_procedure
@@ -243,8 +248,6 @@ case $hostOS in
 				confirm
 				install_rpm_collectd_procedure
 				;;
-		
-			
 			"CentOS release 5") #hostOS_2
 				needed_rpm=$centos_5
 				needed_rpm_name=$centos_5_rpm
