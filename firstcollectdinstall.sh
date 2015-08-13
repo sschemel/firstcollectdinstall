@@ -34,9 +34,9 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 	printf "Starting Configuration of collectd... \n"
 	if [ -z "$api_token" ]
 		then
-		curl -sSL config_wout_token
+		curl -sSL "$config_wout_token"
 	else
-		curl -sSL config_w_token "$api_token"
+		curl -sSL "$config_w_token" "$api_token"
 	fi
 
 }
@@ -102,9 +102,9 @@ Please enter the number of the OS you wish to install for:
 
 	if [ "$selection" -eq 9 ]
 		then
-			printf "We currently do not support any other OS
-collectd with our RPM. You need to vist ~link~ for detailed 
-instructions on how to install collectd. \n" && exit 0
+			printf "We currently do not support any other OS with our collectd packages. 
+You need to visit ~link~ for detailed instructions on how to install the native collectd
+package for your OS. \n" && exit 0
 	
 	else
 			get_needed_os
@@ -136,28 +136,38 @@ install_rpm_collectd_procedure() #install function for RPM collectd
 install_rpm_RHELcentos5.x_procedure()
 {
 	printf "Installing Simple-Json \n"
-	sudo yum -y install python-simplejso
+	sudo yum -y install python-simplejson
+
 	printf "Updating Openssl \n"
 	sudo yum -y update openssl
+	
 	printf "Installing wget \n"
 	sudo yum -y install wge
+	
 	printf "Downloading SignalFx RPM \n"
 	wget $centos_5
 
 	printf "Installing SignalFx RPM \n"
 	sudo yum -y install --nogpgcheck $centos_5_rpm
+	
 	printf "Installing collectd \n"
 	sudo yum -y install collectd #install collectd from signalfx rpm
+	
 	printf "Installing baseplugins \n"
 	sudo yum -y install collectd-disk collectd-write_http #install base plugins signalfx deems nessescar
+	
 	if [ -z "$api_token" ]
 	then
 		printf "We need you to provide the API Token for your org. This can be found @ https://app.signalfx.com/#/myprofile  \n"
 		printf "Please enter your API Token: \n"
+		
 		read -r api_token
+		
 		printf "Starting Configuration of collectd... \n"
 		curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s -- -t "$api_token"
+	
 	else
+		
 		curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple  | sudo bash -s -- -t "$api_token"
 	fi
 }
@@ -178,6 +188,8 @@ install_debian_collectd_procedure() #install function for debian collectd
 		then
 			printf "Installing source package to get SignalFx collectd package \n"
 			sudo apt-get install python-software-properties #for unbuntu < 13.10
+	else
+		printf "There was an error. Exiting. Please contact support@signalfx.com" && exit 0
 	fi
 		
 	printf "Getting SignalFx collectd package \n"
