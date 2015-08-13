@@ -148,7 +148,7 @@ install_rpm_RHELcentos5.x_procedure()
 	sudo yum -y update openssl
 	
 	printf "Installing wget \n"
-	sudo yum -y install wge
+	sudo yum -y install wget
 	
 	printf "Downloading SignalFx RPM \n"
 	wget $centos_5
