@@ -14,8 +14,8 @@ aws_linux_2014_09="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-R
 aws_linux_2015_03="https://dl.signalfx.com/rpms/SignalFx-rpms/release/SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.rpm"
 
 #configuration url variables
-config_wout_token="https://dl.signalfx.com/collectd-simple | sudo bash -s --"
-config_w_token="https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t"
+#config_wout_token="https://dl.signalfx.com/collectd-simple | sudo bash -s --"
+#config_w_token="https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t"
 
 #rpm file variables
 centos_7_rpm="SignalFx-RPMs-centos-7-release-1.0-0.noarch.rpm"
@@ -40,9 +40,9 @@ basic_collectd() #url to configure collectd asks for hostname & username:passwor
 	printf "Starting Configuration of collectd... \n"
 	if [ -z "$api_token" ]
 		then
-		curl -sSL "$config_wout_token"
+		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
 	else
-		curl -sSL "$config_w_token" "$api_token"
+		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s -- -t "$api_token"
 	fi
 
 }
