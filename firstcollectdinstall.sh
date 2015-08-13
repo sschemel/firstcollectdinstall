@@ -27,7 +27,7 @@ hostOS_2=$(head -c 16 /etc/redhat-release) #older versions of RPM based linux th
 #Functions used throughout
 basic_collectd() #url to configure collectd asks for hostname & username:password
 {
-	printf "-->Starting Configuration of collectd... \n"
+	printf "Starting Configuration of collectd... \n"
 	if [ -z "$api_token" ]
 		then
 		curl -sSL https://dl.signalfx.com/collectd-simple | sudo bash -s --
@@ -151,7 +151,7 @@ install_rpm_RHELcentos5.x_procedure()
 		printf "We need you to provide the API Token for your org. This can be found @ https://app.signalfx.com/#/myprofile  \n"
 		printf "Please enter your API Token: \n"
 		read -r api_token
-		printf "-->Starting Configuration of collectd... \n"
+		printf "Starting Configuration of collectd... \n"
 		curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple | sudo bash -s -- -t "$api_token"
 	else
 		curl https://s3.amazonaws.com/public-downloads--signalfuse-com/collectd-simple  | sudo bash -s -- -t "$api_token"
