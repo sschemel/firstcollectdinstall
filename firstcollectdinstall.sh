@@ -83,7 +83,7 @@ get_needed_os()
 get_os_input() 
 {
 	#check for currently value of selection
-	printf \n \n "We were unable to automatically determine the verions of Linux you are on!
+	printf "\n\nWe were unable to automatically determine the verions of Linux you are on!
 Please enter the the number of the OS you wish to install for:
 1. RHEL/Centos 7
 2. RHEL/Centos 6.x
