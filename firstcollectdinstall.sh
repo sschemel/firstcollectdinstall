@@ -253,7 +253,7 @@ case $hostOS in
 	;;
 	"Ubuntu 15.04" | "Ubuntu 14.04.1 LTS") #hostOS
 		selection=6 #6 or 7 install for ubuntu > 13.10
-		printf "Install will proceed for " "$hostOS" "\n"
+		printf "Install will proceed for" $hostOS "\n"
 		confirm
 		install_debian_collectd_procedure
 	;;
