@@ -26,7 +26,7 @@ aws_linux_2015_03_rpm="SignalFx-RPMs-AWS_EC2_Linux_2015_03-release-1.0-0.noarch.
 
 #determine hostOS
 hostOS=$(cat /etc/*-release | grep PRETTY_NAME | grep -o '".*"' | sed 's/"//g' | sed -e 's/([^()]*)//g' | sed -e 's/[[:space:]]*$//') #for newer versions of linux
-printf "$hostOS" "this should be printf"
+printf "$hostOS this should be printf\n"
 echo "$hostOS echo of host"
 
 if [ ! -f /etc/redhat-release ]
