@@ -82,7 +82,7 @@ assign_needed_os()
             hostOS="Ubuntu 12.04"
         ;;
         *)
-        printf "error occurred. Exiting. Please contact support@signalfx.com\n" && exit 0
+        printf "error occurred. Exiting. Please contact signalfx-support@splunk.com\n" && exit 0
         ;;
     esac
 }
